@@ -4,21 +4,21 @@ function transformResponse(response) {
   try {
     const quotes = response.data.query.results.quote;
     const result = {};
-    quotes.forEach(quote => result[quote.Date] = quote.Close);
+    quotes.forEach(quote => result[quote.Date] = quote.Adj_Close);
     return result;
   } catch (e) {
     return {};
   }
 }
 
-module.exports = function getStockData(symbol, startDate, endDate) {
+module.exports = function getStockHistory(symbol, startDate, endDate) {
   return get('http://query.yahooapis.com/v1/public/yql', {
     params: {
-      q: `select Date, Close from yahoo.finance.historicaldata where symbol = "${symbol}" and startDate = "${startDate}" and endDate = "${endDate}"`,
+      q: `select Date, Adj_Close from yahoo.finance.historicaldata where symbol = "${symbol}" and startDate = "${startDate}" and endDate = "${endDate}"`,
       format: 'json',
       env: 'store://datatables.org/alltableswithkeys'
   }})
   .then(response => {
     return Promise.resolve(transformResponse(response));
   });
-}
+};
